@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auditflow-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auditflow-frontend
+  template:
+    metadata:
+      labels:
+        app: auditflow-frontend
+    spec:
+      containers:
+      - name: frontend
+        image: auditflow-frontend:latest
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: auditflow-frontend
+spec:
+  selector:
+    app: auditflow-frontend
+  ports:
+  - port: 80
+    targetPort: 80
+  type: ClusterIP

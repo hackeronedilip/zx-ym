@@ -16,6 +16,12 @@ variable "environment" {
   default     = "prod"
 }
 
+variable "dns_domain" {
+  description = "Primary DNS domain for AuditFlow"
+  type        = string
+  default     = "dilipsecops.blog"
+}
+
 variable "kms_key_id" {
   description = "KMS key ID for S3 server-side encryption"
   type        = string

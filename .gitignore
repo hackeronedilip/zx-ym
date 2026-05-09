@@ -4,6 +4,10 @@ dist/
 build/
 .env
 
+# Docker
+**/Dockerfile
+**/.dockerignore
+
 # Terraform
 .terraform/
 *.tfstate

@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auditflow-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auditflow-backend
+  template:
+    metadata:
+      labels:
+        app: auditflow-backend
+    spec:
+      containers:
+      - name: backend
+        image: auditflow-backend:latest
+        ports:
+        - containerPort: 4000
+        env:
+        - name: NODE_ENV
+          value: "production"
+        - name: DATABASE_URL
+          value: "postgresql://auditflow:auditflow_password@auditflow-db:5432/auditflow"
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: auditflow-backend-secret
+              key: jwt_secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: auditflow-backend
+spec:
+  selector:
+    app: auditflow-backend
+  ports:
+  - port: 4000
+    targetPort: 4000
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: auditflow-backend-secret
+type: Opaque
+data:
+  jwt_secret: c2VjcmV0X2p3dF9rZXk=  # base64 encoded 'secret_jwt_key' - change in prod

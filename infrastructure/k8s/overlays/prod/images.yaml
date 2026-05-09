@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auditflow-backend
+spec:
+  template:
+    spec:
+      containers:
+      - name: backend
+        image: auditflow-backend:latest
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auditflow-frontend
+spec:
+  template:
+    spec:
+      containers:
+      - name: frontend
+        image: auditflow-frontend:latest

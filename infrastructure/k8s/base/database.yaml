@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auditflow-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auditflow-db
+  template:
+    metadata:
+      labels:
+        app: auditflow-db
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:15
+        ports:
+        - containerPort: 5432
+        env:
+        - name: POSTGRES_DB
+          value: auditflow
+        - name: POSTGRES_USER
+          value: auditflow
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: auditflow-db-secret
+              key: password
+        volumeMounts:
+        - name: postgres-storage
+          mountPath: /var/lib/postgresql/data
+      volumes:
+      - name: postgres-storage
+        persistentVolumeClaim:
+          claimName: postgres-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: auditflow-db
+spec:
+  selector:
+    app: auditflow-db
+  ports:
+  - port: 5432
+    targetPort: 5432
+  type: ClusterIP
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: auditflow-db-secret
+type: Opaque
+data:
+  password: YXVkaXRmbG93X3Bhc3N3b3Jk  # base64 encoded 'auditflow_password' - change in prod
